@@ -447,8 +447,8 @@ const ContactoFuerte = () => {
 
             <div className="h-64 lg:h-auto relative">
               <img
-                src="/images/exportacion-contacto.jpg"
-                alt="Contacto exportación"
+                src="/images/puerto-barcelona-noche.jpg"
+                alt="Puerto de Barcelona - Exportación de aguacates"
                 className="absolute inset-0 w-full h-full object-cover"
                 loading="lazy"
               />
