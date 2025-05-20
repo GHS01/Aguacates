@@ -19,7 +19,7 @@ type Product = {
 const products: Product[] = [
   {
     id: 1,
-    image: "/images/Aguacate fuerte Premium.jpeg",
+    image: "/images/Aguacate-fuerte-Premium.webp",
     badge: {
       text: "Premium",
       color: "bg-[#C6A96C]"
@@ -30,7 +30,7 @@ const products: Product[] = [
   },
   {
     id: 2,
-    image: "/images/Aguacate Organico.jpeg",
+    image: "/images/Aguacate-Organico.webp",
     badge: {
       text: "Orgánico",
       color: "bg-green-600"
@@ -41,7 +41,7 @@ const products: Product[] = [
   },
   {
     id: 3,
-    image: "/images/Aguacate Hass Premium.jpeg",
+    image: "/images/Aguacate-Hass-Premium.webp",
     badge: {
       text: "Premium",
       color: "bg-[#C6A96C]"

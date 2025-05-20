@@ -27,13 +27,13 @@ const Header = () => {
   return (
     <header className={cn(
       "fixed w-full z-50 transition-all duration-500",
-      scrolled 
-        ? "py-2 md:py-3 bg-[#F9F6F0] bg-opacity-95 shadow-lg" 
+      scrolled
+        ? "py-2 md:py-3 bg-[#F9F6F0] bg-opacity-95 shadow-lg"
         : "py-4 md:py-6 bg-transparent"
     )}>
       {/* Top golden line */}
       <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#C6A96C] to-transparent"></div>
-      
+
       <div className="container mx-auto px-4 flex justify-between items-center">
         <Link href="/" className="flex items-center">
           <h1 className={cn(
@@ -44,11 +44,11 @@ const Header = () => {
             <span className="text-[#C6A96C] italic ml-1 text-sm md:text-base">Premium</span>
           </h1>
         </Link>
-        
+
         {/* Mobile menu button */}
         <div className="block lg:hidden">
-          <button 
-            onClick={toggleMobileMenu} 
+          <button
+            onClick={toggleMobileMenu}
             className={cn(
               "focus:outline-none transition-colors duration-300 p-1",
               scrolled ? "text-[#2D5C34]" : "text-white"
@@ -62,59 +62,59 @@ const Header = () => {
             )}
           </button>
         </div>
-        
+
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center space-x-8">
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className={cn(
               "font-body transition-all duration-300 text-sm uppercase tracking-widest",
-              scrolled 
-                ? "text-[#2D5C34] hover:text-[#C6A96C]" 
+              scrolled
+                ? "text-[#2D5C34] hover:text-[#C6A96C]"
                 : "text-white/80 hover:text-white"
             )}
           >
             Inicio
           </Link>
-          <Link 
-            href="/productos" 
+          <Link
+            href="/productos"
             className={cn(
               "font-body transition-all duration-300 text-sm uppercase tracking-widest",
-              scrolled 
-                ? "text-[#2D5C34] hover:text-[#C6A96C]" 
+              scrolled
+                ? "text-[#2D5C34] hover:text-[#C6A96C]"
                 : "text-white/80 hover:text-white"
             )}
           >
             Productos
           </Link>
-          <Link 
-            href="/nosotros" 
+          <Link
+            href="/nosotros"
             className={cn(
               "font-body transition-all duration-300 text-sm uppercase tracking-widest",
-              scrolled 
-                ? "text-[#2D5C34] hover:text-[#C6A96C]" 
+              scrolled
+                ? "text-[#2D5C34] hover:text-[#C6A96C]"
                 : "text-white/80 hover:text-white"
             )}
           >
             Nosotros
           </Link>
-          <Link 
-            href="/beneficios" 
+          <Link
+            href="/beneficios"
             className={cn(
               "font-body transition-all duration-300 text-sm uppercase tracking-widest",
-              scrolled 
-                ? "text-[#2D5C34] hover:text-[#C6A96C]" 
+              scrolled
+                ? "text-[#2D5C34] hover:text-[#C6A96C]"
                 : "text-white/80 hover:text-white"
             )}
           >
             Beneficios
           </Link>
-          <Link 
-            href="/galeria" 
+          <Link
+            href="/galeria"
             className={cn(
               "font-body transition-all duration-300 text-sm uppercase tracking-widest",
-              scrolled 
-                ? "text-[#2D5C34] hover:text-[#C6A96C]" 
+              scrolled
+                ? "text-[#2D5C34] hover:text-[#C6A96C]"
                 : "text-white/80 hover:text-white"
             )}
           >
@@ -124,19 +124,41 @@ const Header = () => {
             href="/tienda"
             className={cn(
               "font-body transition-all duration-300 text-sm uppercase tracking-widest",
-              scrolled 
-                ? "text-[#2D5C34] hover:text-[#C6A96C]" 
+              scrolled
+                ? "text-[#2D5C34] hover:text-[#C6A96C]"
                 : "text-white/80 hover:text-white"
             )}
           >
             Tienda
           </Link>
-          <Link 
-            href="/contacto" 
+          <Link
+            href="/exportacion"
+            className={cn(
+              "font-body transition-all duration-300 text-sm uppercase tracking-widest",
+              scrolled
+                ? "text-[#2D5C34] hover:text-[#C6A96C]"
+                : "text-white/80 hover:text-white"
+            )}
+          >
+            Exportación
+          </Link>
+          <Link
+            href="/blog"
+            className={cn(
+              "font-body transition-all duration-300 text-sm uppercase tracking-widest",
+              scrolled
+                ? "text-[#2D5C34] hover:text-[#C6A96C]"
+                : "text-white/80 hover:text-white"
+            )}
+          >
+            Blog
+          </Link>
+          <Link
+            href="/contacto"
             className={cn(
               "border px-6 py-2 font-body text-sm uppercase tracking-wider transition-all duration-300",
               scrolled
-                ? "border-[#C6A96C] text-[#2D5C34] hover:bg-[#C6A96C] hover:text-white" 
+                ? "border-[#C6A96C] text-[#2D5C34] hover:bg-[#C6A96C] hover:text-white"
                 : "border-white/50 text-white hover:bg-white/10"
             )}
           >
@@ -144,13 +166,13 @@ const Header = () => {
           </Link>
         </nav>
       </div>
-      
+
       {/* Mobile Navigation */}
-      <div 
+      <div
         className={cn(
           "lg:hidden transition-all duration-500 overflow-hidden fixed left-0 right-0 z-50",
-          mobileMenuOpen 
-            ? "max-h-[500px] opacity-100 border-t border-[#C6A96C]/20" 
+          mobileMenuOpen
+            ? "max-h-[500px] opacity-100 border-t border-[#C6A96C]/20"
             : "max-h-0 opacity-0"
         )}
         style={{
@@ -159,9 +181,9 @@ const Header = () => {
         }}
       >
         <div className="container mx-auto px-4 py-4 space-y-3">
-          <Link 
-            href="/" 
-            onClick={closeMobileMenu} 
+          <Link
+            href="/"
+            onClick={closeMobileMenu}
             className={cn(
               "block font-body text-sm uppercase tracking-widest transition-colors duration-300 py-2",
               scrolled ? "text-[#2D5C34] hover:text-[#C6A96C]" : "text-white/80 hover:text-white"
@@ -169,9 +191,9 @@ const Header = () => {
           >
             Inicio
           </Link>
-          <Link 
-            href="/productos" 
-            onClick={closeMobileMenu} 
+          <Link
+            href="/productos"
+            onClick={closeMobileMenu}
             className={cn(
               "block font-body text-sm uppercase tracking-widest transition-colors duration-300 py-2",
               scrolled ? "text-[#2D5C34] hover:text-[#C6A96C]" : "text-white/80 hover:text-white"
@@ -179,9 +201,9 @@ const Header = () => {
           >
             Productos
           </Link>
-          <Link 
-            href="/nosotros" 
-            onClick={closeMobileMenu} 
+          <Link
+            href="/nosotros"
+            onClick={closeMobileMenu}
             className={cn(
               "block font-body text-sm uppercase tracking-widest transition-colors duration-300 py-2",
               scrolled ? "text-[#2D5C34] hover:text-[#C6A96C]" : "text-white/80 hover:text-white"
@@ -189,9 +211,9 @@ const Header = () => {
           >
             Nosotros
           </Link>
-          <Link 
-            href="/beneficios" 
-            onClick={closeMobileMenu} 
+          <Link
+            href="/beneficios"
+            onClick={closeMobileMenu}
             className={cn(
               "block font-body text-sm uppercase tracking-widest transition-colors duration-300 py-2",
               scrolled ? "text-[#2D5C34] hover:text-[#C6A96C]" : "text-white/80 hover:text-white"
@@ -199,9 +221,9 @@ const Header = () => {
           >
             Beneficios
           </Link>
-          <Link 
-            href="/galeria" 
-            onClick={closeMobileMenu} 
+          <Link
+            href="/galeria"
+            onClick={closeMobileMenu}
             className={cn(
               "block font-body text-sm uppercase tracking-widest transition-colors duration-300 py-2",
               scrolled ? "text-[#2D5C34] hover:text-[#C6A96C]" : "text-white/80 hover:text-white"
@@ -209,9 +231,9 @@ const Header = () => {
           >
             Galería
           </Link>
-          <Link 
+          <Link
             href="/tienda"
-            onClick={closeMobileMenu} 
+            onClick={closeMobileMenu}
             className={cn(
               "block font-body text-sm uppercase tracking-widest transition-colors duration-300 py-2",
               scrolled ? "text-[#2D5C34] hover:text-[#C6A96C]" : "text-white/80 hover:text-white"
@@ -219,13 +241,33 @@ const Header = () => {
           >
             Tienda
           </Link>
-          <Link 
-            href="/contacto" 
-            onClick={closeMobileMenu} 
+          <Link
+            href="/exportacion"
+            onClick={closeMobileMenu}
+            className={cn(
+              "block font-body text-sm uppercase tracking-widest transition-colors duration-300 py-2",
+              scrolled ? "text-[#2D5C34] hover:text-[#C6A96C]" : "text-white/80 hover:text-white"
+            )}
+          >
+            Exportación
+          </Link>
+          <Link
+            href="/blog"
+            onClick={closeMobileMenu}
+            className={cn(
+              "block font-body text-sm uppercase tracking-widest transition-colors duration-300 py-2",
+              scrolled ? "text-[#2D5C34] hover:text-[#C6A96C]" : "text-white/80 hover:text-white"
+            )}
+          >
+            Blog
+          </Link>
+          <Link
+            href="/contacto"
+            onClick={closeMobileMenu}
             className={cn(
               "block text-center border py-3 px-6 font-body text-sm uppercase tracking-wider transition-all duration-300",
               scrolled
-                ? "border-[#C6A96C] text-[#2D5C34] hover:bg-[#C6A96C] hover:text-white" 
+                ? "border-[#C6A96C] text-[#2D5C34] hover:bg-[#C6A96C] hover:text-white"
                 : "border-white/50 text-white hover:bg-white/10"
             )}
           >

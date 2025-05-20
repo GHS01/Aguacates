@@ -24,7 +24,7 @@ type GalleryItem = {
 const galleryItems: GalleryItem[] = [
   {
     id: 1,
-    image: "/images/Tostada de aguacate con huevo pochado y semillas de chía.jpg",
+    image: "/images/Tostada de aguacate con huevo pochado y semillas de chía.webp",
     alt: "Tostada de aguacate con huevo pochado y semillas de chía",
     category: 'platos',
     description: "Una exquisita combinación de aguacate cremoso con huevo pochado y el toque crujiente de las semillas de chía. Este plato es tan saludable como delicioso, ideal para un desayuno energético o brunch elegante.",
@@ -55,7 +55,7 @@ const galleryItems: GalleryItem[] = [
   },
   {
     id: 2,
-    image: "/images/Sushi con aguacate y salmón premium.jpg",
+    image: "/images/Sushi con aguacate y salmón premium.webp",
     alt: "Sushi con aguacate y salmón premium",
     category: 'platos',
     description: "Una fusión perfecta entre la tradición japonesa y nuestro aguacate premium. Cada rollo es una obra maestra donde el aguacate aporta cremosidad y el salmón un sabor excepcional, creando una experiencia gastronómica de alta cocina.",
@@ -91,7 +91,7 @@ const galleryItems: GalleryItem[] = [
   },
   {
     id: 3,
-    image: "/images/Guacamole fresco con lima y cilantro.jpg",
+    image: "/images/Guacamole fresco con lima y cilantro.webp",
     alt: "Guacamole fresco con lima y cilantro",
     category: 'platos',
     description: "Nuestro guacamole artesanal combina la cremosidad de los aguacates Hass Premium con el toque cítrico de la lima y la frescura del cilantro. Una receta tradicional elevada a la perfección con ingredientes de la más alta calidad.",
@@ -123,14 +123,14 @@ const galleryItems: GalleryItem[] = [
   },
   {
     id: 4,
-    image: "/images/Aguacates frescos recien cocechados.jpg",
+    image: "/images/Aguacates frescos recien cocechados.webp",
     alt: "Aguacates frescos recién cosechados",
     category: 'ingredientes',
     description: "Nuestros aguacates son cosechados a mano en el punto perfecto de maduración para garantizar su máximo sabor y textura. Cada pieza es seleccionada cuidadosamente por expertos agricultores que valoran la calidad sobre la cantidad, asegurando que solo los mejores ejemplares lleguen a su mesa. Cultivados en las fértiles tierras de los valles andinos, nuestros aguacates son 100% naturales, sin aditivos ni conservantes, preservando todas sus propiedades nutricionales y su incomparable sabor cremoso."
   },
   {
     id: 5,
-    image: "/images/Plato gourmet con aguacate y langostinos.jpg",
+    image: "/images/Plato gourmet con aguacate y langostinos.webp",
     alt: "Plato gourmet con aguacate y langostinos",
     category: 'platos',
     description: "Una sofisticada creación donde el aguacate y los langostinos crean una sinfonía de sabores y texturas. Este plato de alta cocina realza la suavidad del aguacate con el sabor marino de los langostinos, todo armonizado con hierbas frescas y acentos cítricos.",
@@ -162,7 +162,7 @@ const galleryItems: GalleryItem[] = [
   },
   {
     id: 6,
-    image: "/images/Smoothie de aguacate, arandanos, brambuesa y platano.jpg",
+    image: "/images/Smoothie de aguacate, arandanos, brambuesa y platano.webp",
     alt: "Smoothie de aguacate, arándanos, frambuesa y plátano",
     category: 'platos',
     description: "Una bebida nutritiva y refrescante que combina la cremosidad del aguacate con la dulzura del plátano y el toque ácido de los frutos rojos. Esta deliciosa mezcla no solo es un placer para el paladar sino también una fuente de antioxidantes y energía natural.",
@@ -194,14 +194,14 @@ const galleryItems: GalleryItem[] = [
   },
   {
     id: 7,
-    image: "/images/Campos de aguacate.jpg",
+    image: "/images/Campos de aguacate.webp",
     alt: "Campos de aguacate en el valle andino",
     category: 'cultivo',
     description: "Nuestros extensos campos de aguacate se encuentran estratégicamente ubicados en los privilegiados valles andinos, donde la combinación perfecta de altitud, clima y suelo mineral crea condiciones ideales para el cultivo. A más de 1,500 metros sobre el nivel del mar, nuestras plantaciones reciben la cantidad óptima de luz solar y humedad, permitiendo un desarrollo lento y natural de cada fruto. Implementamos técnicas de agricultura sostenible que respetan el equilibrio natural del ecosistema, empleando sistemas de riego por goteo que maximizan la eficiencia del agua y utilizando abonos orgánicos que mantienen la salud del suelo. Cada hectárea de nuestros campos es un testimonio de nuestro compromiso con la calidad y la preservación del medio ambiente para las generaciones futuras."
   },
   {
     id: 8,
-    image: "/images/Postre de mousse de chocolate con aguacate.jpg",
+    image: "/images/Postre de mousse de chocolate con aguacate.webp",
     alt: "Postre de mousse de chocolate con aguacate",
     category: 'platos',
     description: "Un postre sofisticado que redefine el lujo culinario al combinar el intenso sabor del chocolate con la suavidad del aguacate. Esta mousse sedosa sorprende por su textura perfecta y profundidad de sabor, sin revelar su saludable secreto.",
@@ -234,7 +234,7 @@ const galleryItems: GalleryItem[] = [
   },
   {
     id: 9,
-    image: "/images/Trabajador seleccionando los mejores aguacates.jpg",
+    image: "/images/Trabajador seleccionando los mejores aguacates.webp",
     alt: "Trabajador seleccionando los mejores aguacates",
     category: 'cultivo',
     description: "En Inca Fields, la selección de cada aguacate es un arte que requiere años de experiencia y un ojo entrenado. Nuestros maestros seleccionadores evalúan meticulosamente cada fruto, considerando su peso, firmeza, color y textura para garantizar que solo los ejemplares perfectos reciban nuestra etiqueta Premium. Este proceso artesanal, transmitido de generación en generación, es parte fundamental de nuestro compromiso con la excelencia. Trabajamos bajo principios de comercio justo, proporcionando condiciones laborales dignas y remuneración justa a nuestros colaboradores, muchos de los cuales provienen de familias con tradición agrícola que han trabajado con nosotros por décadas. Este conocimiento ancestral, combinado con técnicas modernas de control de calidad, asegura que cada aguacate que llega a su mesa representa lo mejor de nuestra cosecha."

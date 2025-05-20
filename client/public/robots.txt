@@ -1,0 +1,26 @@
+# robots.txt para Inca Fields Premium
+
+User-agent: *
+Allow: /
+
+# Permitir acceso a todas las páginas principales
+Allow: /nosotros
+Allow: /productos
+Allow: /beneficios
+Allow: /galeria
+Allow: /contacto
+Allow: /tienda
+Allow: /blog
+
+# Permitir acceso a las páginas de exportación
+Allow: /exportacion
+Allow: /exportacion/hass
+Allow: /exportacion/fuerte
+Allow: /exportacion/proceso
+Allow: /exportacion/certificaciones
+
+# Sitemap
+Sitemap: https://inca-fields-ghs.vercel.app/sitemap.xml
+
+# Tiempo de espera entre solicitudes
+Crawl-delay: 10

@@ -21,6 +21,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import SEO from '@/components/SEO';
 
 type ProductCategory = 'todos' | 'aguacates' | 'aceites' | 'cuidado-personal';
 
@@ -55,9 +56,9 @@ const products: Product[] = [
     name: "Aguacate Hass Premium",
     description: "Nuestro aguacate estrella, con el balance perfecto de cremosidad y sabor.",
     price: "S/8.99/kg",
-    image: "/images/Aguacate Hass Premium.jpeg",
+    image: "/images/Aguacate-Hass-Premium.webp",
     gallery: [
-      "/images/Aguacate Hass Premium.jpeg"
+      "/images/Aguacate-Hass-Premium.webp"
     ],
     rating: 4.9,
     reviewCount: 128,
@@ -81,9 +82,9 @@ const products: Product[] = [
     description: "Cultivado sin pesticidas ni aditivos químicos, conservando todo su sabor natural.",
     price: "S/10.99/kg",
     originalPrice: "S/12.99/kg",
-    image: "/images/Aguacate Organico.jpeg",
+    image: "/images/Aguacate-Organico.webp",
     gallery: [
-      "/images/Aguacate Organico.jpeg"
+      "/images/Aguacate-Organico.webp"
     ],
     rating: 4.8,
     reviewCount: 93,
@@ -101,9 +102,9 @@ const products: Product[] = [
     name: "Aguacate fuerte Premium",
     description: "Selección especial de nuestros mejores aguacates en un empaque de lujo.",
     price: "S/24.99",
-    image: "/images/Aguacate fuerte Premium.jpeg",
+    image: "/images/Aguacate-fuerte-Premium.webp",
     gallery: [
-      "/images/Aguacate fuerte Premium.jpeg"
+      "/images/Aguacate-fuerte-Premium.webp"
     ],
     rating: 5.0,
     reviewCount: 42,
@@ -635,8 +636,69 @@ const Tienda = () => {
     }
   });
 
+  // Schema.org para la página de tienda
+  const storeSchema = {
+    "@context": "https://schema.org",
+    "@type": "Store",
+    "name": "Tienda Inca Fields Premium",
+    "description": "Descubre nuestra colección premium de aguacates, aceites y productos de cuidado personal derivados del aguacate.",
+    "url": "https://inca-fields-ghs.vercel.app/tienda",
+    "telephone": "+51 998 148 917",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Av. Blv de la Literatura 164",
+      "addressLocality": "Lima",
+      "addressRegion": "Lima",
+      "addressCountry": "Perú"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": "-12.0464",
+      "longitude": "-77.0428"
+    },
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": [
+        "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"
+      ],
+      "opens": "09:00",
+      "closes": "18:00"
+    },
+    "priceRange": "$$"
+  };
+
+  // Título y descripción dinámicos basados en la categoría seleccionada
+  let pageTitle = '';
+  let pageDescription = '';
+
+  switch (activeCategory) {
+    case 'aguacates':
+      pageTitle = "Aguacates Premium de Exportación | Tienda Inca Fields";
+      pageDescription = "Compra aguacates Hass y Fuerte premium cultivados en los valles andinos de Perú. Calidad excepcional, sabor inigualable y envío a todo el país.";
+      break;
+    case 'aceites':
+      pageTitle = "Aceites Gourmet de Aguacate | Tienda Inca Fields";
+      pageDescription = "Descubre nuestra selección de aceites gourmet de aguacate, prensados en frío e infusionados. Ideales para cocina de alta calidad y cuidado personal.";
+      break;
+    case 'cuidado-personal':
+      pageTitle = "Productos de Cuidado Personal con Aguacate | Tienda Inca Fields";
+      pageDescription = "Productos naturales para el cuidado de la piel y cabello elaborados con aceite de aguacate. Hidratación profunda y nutrición para tu belleza.";
+      break;
+    default:
+      pageTitle = "Tienda Premium de Aguacates y Derivados | Inca Fields";
+      pageDescription = "Explora nuestra tienda de aguacates premium, aceites gourmet y productos de cuidado personal. Calidad excepcional directamente de los valles andinos de Perú.";
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
+      <SEO
+        title={pageTitle}
+        description={pageDescription}
+        keywords="aguacates premium, aguacate hass, aguacate fuerte, aceite de aguacate, cuidado personal, tienda online, Perú"
+        url="https://inca-fields-ghs.vercel.app/tienda"
+        type="website"
+        schema={storeSchema}
+      />
       <Header />
 
       <main className="flex-grow pt-16 md:pt-24 overflow-hidden">
