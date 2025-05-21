@@ -20,17 +20,17 @@ class MailerSendService {
   constructor() {
     this.apiKey = process.env.MAILERSEND_API_KEY || '';
     this.apiUrl = 'https://api.mailersend.com/v1/email';
-    
+
     // Dominio verificado en MailerSend
     this.fromEmail = process.env.MAILERSEND_FROM_EMAIL || 'contacto@test-eqvygm0n68zl0p7w.mlsender.net';
     this.fromName = process.env.MAILERSEND_FROM_NAME || 'Inca Fields Premium';
-    
+
     // Correo al que se enviarán los mensajes
     this.toEmail = process.env.MAILERSEND_TO_EMAIL || 'peru.aguacates@gmail.com';
   }
 
   /**
-   * Envía un email usando la API de MailerSend
+   * Envía un email usando la API de MailerSend con sistema de reintentos
    */
   async sendEmail(params) {
     if (!this.apiKey) {
@@ -38,42 +38,74 @@ class MailerSendService {
       return false;
     }
 
-    try {
-      console.log(`📧 Enviando email desde ${params.from.email} a ${params.to.map(t => t.email).join(', ')}`);
+    // Configuración de reintentos
+    const maxRetries = 2;
+    const timeoutMs = 5000; // 5 segundos de timeout por intento
 
-      const response = await fetch(this.apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`
-        },
-        body: JSON.stringify(params)
-      });
-
-      // Obtener la respuesta completa para depuración
-      const responseText = await response.text();
-      let errorData = {};
-
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
-        if (responseText) {
-          errorData = JSON.parse(responseText);
-        }
-      } catch (e) {
-        console.log(`Advertencia: No se pudo analizar la respuesta como JSON: ${responseText}`);
-      }
+        console.log(`📧 Intento ${attempt + 1}/${maxRetries + 1}: Enviando email desde ${params.from.email} a ${params.to.map(t => t.email).join(', ')}`);
 
-      if (!response.ok) {
-        console.log(`❌ Error al enviar el email: ${response.status} ${response.statusText}`);
-        console.log(`Detalles del error: ${JSON.stringify(errorData)}`);
+        // Crear un controlador de aborto para implementar timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+        const response = await fetch(this.apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.apiKey}`
+          },
+          body: JSON.stringify(params),
+          signal: controller.signal
+        });
+
+        // Limpiar el timeout
+        clearTimeout(timeoutId);
+
+        // Obtener la respuesta completa para depuración
+        const responseText = await response.text();
+        let errorData = {};
+
+        try {
+          if (responseText) {
+            errorData = JSON.parse(responseText);
+          }
+        } catch (e) {
+          console.log(`Advertencia: No se pudo analizar la respuesta como JSON: ${responseText}`);
+        }
+
+        if (!response.ok) {
+          console.log(`❌ Error al enviar el email (intento ${attempt + 1}): ${response.status} ${response.statusText}`);
+          console.log(`Detalles del error: ${JSON.stringify(errorData)}`);
+
+          // Si no es el último intento, esperar antes de reintentar
+          if (attempt < maxRetries) {
+            const backoffMs = Math.pow(2, attempt) * 1000; // Backoff exponencial: 1s, 2s, 4s...
+            console.log(`Reintentando en ${backoffMs}ms...`);
+            await new Promise(resolve => setTimeout(resolve, backoffMs));
+            continue;
+          }
+          return false;
+        }
+
+        console.log('✅ Email enviado correctamente');
+        return true;
+      } catch (error) {
+        console.log(`❌ Excepción al enviar el email (intento ${attempt + 1}): ${error.message || String(error)}`);
+
+        // Si es un error de timeout o un error de red y no es el último intento, reintentar
+        if (attempt < maxRetries) {
+          const backoffMs = Math.pow(2, attempt) * 1000;
+          console.log(`Reintentando en ${backoffMs}ms...`);
+          await new Promise(resolve => setTimeout(resolve, backoffMs));
+          continue;
+        }
         return false;
       }
-
-      console.log('✅ Email enviado correctamente');
-      return true;
-    } catch (error) {
-      console.log(`❌ Excepción al enviar el email: ${error.message || String(error)}`);
-      return false;
     }
+
+    return false; // Si llegamos aquí, todos los intentos fallaron
   }
 
   /**
@@ -93,53 +125,25 @@ ${contact.message}
 Aceptó política de privacidad: ${contact.acceptedPrivacy ? 'Sí' : 'No'}
 `;
 
+    // HTML simplificado para reducir el tamaño y el tiempo de procesamiento
     const html = `
-<!DOCTYPE html>
-<html>
-<head>
-  <style>
-    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-    .header { background-color: #2D5C34; color: white; padding: 10px 20px; border-radius: 5px 5px 0 0; }
-    .content { padding: 20px; border: 1px solid #ddd; border-top: none; border-radius: 0 0 5px 5px; }
-    .field { margin-bottom: 15px; }
-    .label { font-weight: bold; color: #2D5C34; }
-    .message { white-space: pre-wrap; background-color: #f9f9f9; padding: 15px; border-radius: 5px; }
-    .footer { margin-top: 20px; font-size: 12px; color: #777; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h2>Nuevo Mensaje de Contacto</h2>
-    </div>
-    <div class="content">
-      <div class="field">
-        <span class="label">Nombre:</span> ${contact.name}
-      </div>
-      <div class="field">
-        <span class="label">Email:</span> ${contact.email}
-      </div>
-      <div class="field">
-        <span class="label">WhatsApp:</span> ${contact.whatsapp}
-      </div>
-      <div class="field">
-        <span class="label">Asunto:</span> ${contact.subject}
-      </div>
-      <div class="field">
-        <span class="label">Mensaje:</span>
-        <div class="message">${contact.message.replace(/\n/g, '<br>')}</div>
-      </div>
-      <div class="field">
-        <span class="label">Aceptó política de privacidad:</span> ${contact.acceptedPrivacy ? 'Sí' : 'No'}
-      </div>
-    </div>
-    <div class="footer">
-      Este mensaje fue enviado desde el formulario de contacto de Inca Fields Premium.
-    </div>
+<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
+  <div style="background-color:#2D5C34;color:white;padding:10px 20px;border-radius:5px 5px 0 0">
+    <h2>Nuevo Mensaje de Contacto</h2>
   </div>
-</body>
-</html>
+  <div style="padding:20px;border:1px solid #ddd;border-top:none;border-radius:0 0 5px 5px">
+    <p><strong style="color:#2D5C34">Nombre:</strong> ${contact.name}</p>
+    <p><strong style="color:#2D5C34">Email:</strong> ${contact.email}</p>
+    <p><strong style="color:#2D5C34">WhatsApp:</strong> ${contact.whatsapp}</p>
+    <p><strong style="color:#2D5C34">Asunto:</strong> ${contact.subject}</p>
+    <p><strong style="color:#2D5C34">Mensaje:</strong></p>
+    <div style="background-color:#f9f9f9;padding:15px;border-radius:5px">${contact.message.replace(/\n/g, '<br>')}</div>
+    <p><strong style="color:#2D5C34">Aceptó política:</strong> ${contact.acceptedPrivacy ? 'Sí' : 'No'}</p>
+  </div>
+  <div style="margin-top:20px;font-size:12px;color:#777">
+    Este mensaje fue enviado desde el formulario de contacto de Inca Fields Premium.
+  </div>
+</div>
 `;
 
     // Registrar información de depuración
@@ -233,35 +237,44 @@ export default async function handler(req) {
       );
     }
 
-    // Enviar el email
-    const emailSent = await mailerSend.sendContactFormEmail(body);
+    // Responder inmediatamente al usuario para evitar timeout
+    // y enviar el email en segundo plano
+    const emailPromise = mailerSend.sendContactFormEmail(body);
 
-    if (emailSent) {
-      return new Response(
-        JSON.stringify({
-          success: true,
-          message: "Mensaje recibido y email enviado correctamente"
-        }),
-        {
-          status: 201,
-          headers
-        }
-      );
-    } else {
-      return new Response(
-        JSON.stringify({
-          success: true,
-          message: "Mensaje recibido pero no se pudo enviar el email"
-        }),
-        {
-          status: 201,
-          headers
-        }
-      );
-    }
+    // Almacenar los datos del contacto para referencia futura
+    console.log(`✅ Datos de contacto recibidos y validados:
+    - Nombre: ${body.name}
+    - Email: ${body.email}
+    - WhatsApp: ${body.whatsapp}
+    - Asunto: ${body.subject}`);
+
+    // Responder al usuario inmediatamente
+    const response = new Response(
+      JSON.stringify({
+        success: true,
+        message: "Mensaje recibido correctamente. Te contactaremos pronto."
+      }),
+      {
+        status: 201,
+        headers
+      }
+    );
+
+    // Procesar el envío de email en segundo plano
+    emailPromise.then(emailSent => {
+      if (emailSent) {
+        console.log('✅ Email enviado correctamente en segundo plano');
+      } else {
+        console.log('⚠️ No se pudo enviar el email en segundo plano');
+      }
+    }).catch(error => {
+      console.error('❌ Error al enviar el email en segundo plano:', error);
+    });
+
+    return response;
   } catch (error) {
     console.error("Error al procesar el formulario de contacto:", error);
-    
+
     return new Response(
       JSON.stringify({
         success: false,
