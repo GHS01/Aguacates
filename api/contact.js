@@ -1,4 +1,4 @@
-// API de contacto para Vercel Edge Functions
+// API de contacto para Vercel Serverless Functions (Node.js)
 import { z } from 'zod';
 
 // Esquema de validación para el formulario de contacto
@@ -170,76 +170,48 @@ Aceptó política de privacidad: ${contact.acceptedPrivacy ? 'Sí' : 'No'}
 // Crear una instancia del servicio de MailerSend
 const mailerSend = new MailerSendService();
 
-// Función principal para manejar las solicitudes
-export default async function handler(req) {
-  // Configurar CORS para Edge Functions
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Content-Type': 'application/json'
-  };
+// Función principal para manejar las solicitudes (Node.js)
+export default async function handler(req, res) {
+  // Configurar CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Content-Type', 'application/json');
 
   // Manejar solicitudes OPTIONS (preflight)
   if (req.method === 'OPTIONS') {
-    return new Response(null, {
-      status: 204,
-      headers
-    });
+    return res.status(204).end();
   }
 
   // Solo permitir solicitudes POST
   if (req.method !== 'POST') {
-    return new Response(
-      JSON.stringify({
-        success: false,
-        message: 'Solo se aceptan solicitudes POST'
-      }),
-      {
-        status: 405,
-        headers
-      }
-    );
+    return res.status(405).json({
+      success: false,
+      message: 'Solo se aceptan solicitudes POST'
+    });
   }
 
   try {
-    // Parsear el cuerpo de la solicitud como JSON
-    let body;
-    try {
-      body = await req.json();
-    } catch (parseError) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: "Error al procesar la solicitud. Por favor, intenta de nuevo."
-        }),
-        {
-          status: 400,
-          headers
-        }
-      );
+    // Obtener el cuerpo de la solicitud
+    const body = req.body;
+
+    if (!body) {
+      return res.status(400).json({
+        success: false,
+        message: "Error al procesar la solicitud. Por favor, intenta de nuevo."
+      });
     }
 
     // Validar los datos del formulario
     try {
       contactSchema.parse(body);
     } catch (validationError) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: "Datos del formulario inválidos",
-          errors: validationError.errors
-        }),
-        {
-          status: 400,
-          headers
-        }
-      );
+      return res.status(400).json({
+        success: false,
+        message: "Datos del formulario inválidos",
+        errors: validationError.errors
+      });
     }
-
-    // Responder inmediatamente al usuario para evitar timeout
-    // y enviar el email en segundo plano
-    const emailPromise = mailerSend.sendContactFormEmail(body);
 
     // Almacenar los datos del contacto para referencia futura
     console.log(`✅ Datos de contacto recibidos y validados:
@@ -248,42 +220,42 @@ export default async function handler(req) {
     - WhatsApp: ${body.whatsapp}
     - Asunto: ${body.subject}`);
 
-    // Responder al usuario inmediatamente
-    const response = new Response(
-      JSON.stringify({
-        success: true,
-        message: "Mensaje recibido correctamente. Te contactaremos pronto."
-      }),
-      {
-        status: 201,
-        headers
-      }
-    );
+    // Enviar el email (con un timeout de 30 segundos)
+    const emailPromise = Promise.race([
+      mailerSend.sendContactFormEmail(body),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Timeout al enviar el email')), 30000)
+      )
+    ]);
 
-    // Procesar el envío de email en segundo plano
-    emailPromise.then(emailSent => {
+    try {
+      const emailSent = await emailPromise;
       if (emailSent) {
-        console.log('✅ Email enviado correctamente en segundo plano');
+        console.log('✅ Email enviado correctamente');
+        return res.status(201).json({
+          success: true,
+          message: "Mensaje recibido y email enviado correctamente"
+        });
       } else {
-        console.log('⚠️ No se pudo enviar el email en segundo plano');
+        console.log('⚠️ No se pudo enviar el email');
+        return res.status(201).json({
+          success: true,
+          message: "Mensaje recibido pero no se pudo enviar el email"
+        });
       }
-    }).catch(error => {
-      console.error('❌ Error al enviar el email en segundo plano:', error);
-    });
-
-    return response;
+    } catch (emailError) {
+      console.error('❌ Error al enviar el email:', emailError);
+      return res.status(201).json({
+        success: true,
+        message: "Mensaje recibido pero hubo un problema al enviar el email"
+      });
+    }
   } catch (error) {
     console.error("Error al procesar el formulario de contacto:", error);
 
-    return new Response(
-      JSON.stringify({
-        success: false,
-        message: "Error al procesar el formulario de contacto"
-      }),
-      {
-        status: 500,
-        headers
-      }
-    );
+    return res.status(500).json({
+      success: false,
+      message: "Error al procesar el formulario de contacto"
+    });
   }
 }

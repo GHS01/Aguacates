@@ -1,4 +1,4 @@
-// API de suscripción para Vercel Edge Functions
+// API de suscripción para Vercel Serverless Functions (Node.js)
 import { z } from 'zod';
 
 // Esquema de validación para el formulario de suscripción
@@ -11,119 +11,77 @@ const subscriberSchema = z.object({
 let subscribers = new Map();
 let currentId = 1;
 
-// Función principal para manejar las solicitudes
-export default async function handler(req) {
-  // Configurar CORS para Edge Functions
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Content-Type': 'application/json'
-  };
+// Función principal para manejar las solicitudes (Node.js)
+export default async function handler(req, res) {
+  // Configurar CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Content-Type', 'application/json');
 
   // Manejar solicitudes OPTIONS (preflight)
   if (req.method === 'OPTIONS') {
-    return new Response(null, {
-      status: 204,
-      headers
-    });
+    return res.status(204).end();
   }
 
   // Solo permitir solicitudes POST
   if (req.method !== 'POST') {
-    return new Response(
-      JSON.stringify({
-        success: false,
-        message: 'Solo se aceptan solicitudes POST'
-      }),
-      {
-        status: 405,
-        headers
-      }
-    );
+    return res.status(405).json({
+      success: false,
+      message: 'Solo se aceptan solicitudes POST'
+    });
   }
 
   try {
-    // Parsear el cuerpo de la solicitud como JSON
-    let body;
-    try {
-      body = await req.json();
-    } catch (parseError) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: "Error al procesar la solicitud. Por favor, intenta de nuevo."
-        }),
-        {
-          status: 400,
-          headers
-        }
-      );
+    // Obtener el cuerpo de la solicitud
+    const body = req.body;
+
+    if (!body) {
+      return res.status(400).json({
+        success: false,
+        message: "Error al procesar la solicitud. Por favor, intenta de nuevo."
+      });
     }
 
     // Validar los datos del formulario
     try {
       subscriberSchema.parse(body);
     } catch (validationError) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: "Email inválido",
-          errors: validationError.errors
-        }),
-        {
-          status: 400,
-          headers
-        }
-      );
+      return res.status(400).json({
+        success: false,
+        message: "Email inválido",
+        errors: validationError.errors
+      });
     }
 
     // Verificar si el email ya está suscrito
     const emailExists = Array.from(subscribers.values()).some(
       (sub) => sub.email === body.email
     );
-    
+
     if (emailExists) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: "Email ya suscrito"
-        }),
-        {
-          status: 409,
-          headers
-        }
-      );
+      return res.status(409).json({
+        success: false,
+        message: "Email ya suscrito"
+      });
     }
-    
+
     // Guardar la suscripción
     const id = currentId++;
     const subscriber = { ...body, id };
     subscribers.set(id, subscriber);
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        message: "Suscripción exitosa",
-        subscriber
-      }),
-      {
-        status: 201,
-        headers
-      }
-    );
+    return res.status(201).json({
+      success: true,
+      message: "Suscripción exitosa",
+      subscriber
+    });
   } catch (error) {
     console.error("Error al procesar la suscripción:", error);
-    
-    return new Response(
-      JSON.stringify({
-        success: false,
-        message: "Error al procesar la suscripción"
-      }),
-      {
-        status: 500,
-        headers
-      }
-    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Error al procesar la suscripción"
+    });
   }
 }
