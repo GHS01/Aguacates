@@ -1,5 +1,6 @@
 // API de contacto para Vercel Serverless Functions (Node.js)
 import { z } from 'zod';
+import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend';
 
 // Esquema de validación para el formulario de contacto
 const contactSchema = z.object({
@@ -14,12 +15,11 @@ const contactSchema = z.object({
 });
 
 /**
- * Servicio para enviar emails usando la API de MailerSend
+ * Servicio para enviar emails usando el SDK oficial de MailerSend
  */
 class MailerSendService {
   constructor() {
     this.apiKey = process.env.MAILERSEND_API_KEY || '';
-    this.apiUrl = 'https://api.mailersend.com/v1/email';
 
     // Dominio verificado en MailerSend
     this.fromEmail = process.env.MAILERSEND_FROM_EMAIL || 'contacto@test-eqvygm0n68zl0p7w.mlsender.net';
@@ -27,10 +27,15 @@ class MailerSendService {
 
     // Correo al que se enviarán los mensajes
     this.toEmail = process.env.MAILERSEND_TO_EMAIL || 'peru.aguacates@gmail.com';
+
+    // Inicializar el cliente de MailerSend
+    this.mailerSend = new MailerSend({
+      apiKey: this.apiKey
+    });
   }
 
   /**
-   * Envía un email usando la API de MailerSend con sistema de reintentos
+   * Envía un email usando el SDK oficial de MailerSend
    */
   async sendEmail(params) {
     if (!this.apiKey) {
@@ -38,74 +43,38 @@ class MailerSendService {
       return false;
     }
 
-    // Configuración de reintentos
-    const maxRetries = 2;
-    const timeoutMs = 5000; // 5 segundos de timeout por intento
+    try {
+      console.log(`📧 Enviando email desde ${params.from.email} a ${params.to[0].email}`);
 
-    for (let attempt = 0; attempt <= maxRetries; attempt++) {
-      try {
-        console.log(`📧 Intento ${attempt + 1}/${maxRetries + 1}: Enviando email desde ${params.from.email} a ${params.to.map(t => t.email).join(', ')}`);
+      // Crear los parámetros del email usando el SDK
+      const emailParams = new EmailParams()
+        .setFrom(new Sender(params.from.email, params.from.name))
+        .setTo([new Recipient(params.to[0].email)])
+        .setSubject(params.subject)
+        .setHtml(params.html)
+        .setText(params.text);
 
-        // Crear un controlador de aborto para implementar timeout
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+      // Enviar el email con un timeout de 25 segundos
+      const emailPromise = Promise.race([
+        this.mailerSend.email.send(emailParams),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Timeout al enviar el email')), 25000)
+        )
+      ]);
 
-        const response = await fetch(this.apiUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.apiKey}`
-          },
-          body: JSON.stringify(params),
-          signal: controller.signal
-        });
+      await emailPromise;
+      console.log('✅ Email enviado correctamente');
+      return true;
+    } catch (error) {
+      console.log(`❌ Error al enviar el email: ${error.message || String(error)}`);
 
-        // Limpiar el timeout
-        clearTimeout(timeoutId);
-
-        // Obtener la respuesta completa para depuración
-        const responseText = await response.text();
-        let errorData = {};
-
-        try {
-          if (responseText) {
-            errorData = JSON.parse(responseText);
-          }
-        } catch (e) {
-          console.log(`Advertencia: No se pudo analizar la respuesta como JSON: ${responseText}`);
-        }
-
-        if (!response.ok) {
-          console.log(`❌ Error al enviar el email (intento ${attempt + 1}): ${response.status} ${response.statusText}`);
-          console.log(`Detalles del error: ${JSON.stringify(errorData)}`);
-
-          // Si no es el último intento, esperar antes de reintentar
-          if (attempt < maxRetries) {
-            const backoffMs = Math.pow(2, attempt) * 1000; // Backoff exponencial: 1s, 2s, 4s...
-            console.log(`Reintentando en ${backoffMs}ms...`);
-            await new Promise(resolve => setTimeout(resolve, backoffMs));
-            continue;
-          }
-          return false;
-        }
-
-        console.log('✅ Email enviado correctamente');
-        return true;
-      } catch (error) {
-        console.log(`❌ Excepción al enviar el email (intento ${attempt + 1}): ${error.message || String(error)}`);
-
-        // Si es un error de timeout o un error de red y no es el último intento, reintentar
-        if (attempt < maxRetries) {
-          const backoffMs = Math.pow(2, attempt) * 1000;
-          console.log(`Reintentando en ${backoffMs}ms...`);
-          await new Promise(resolve => setTimeout(resolve, backoffMs));
-          continue;
-        }
-        return false;
+      // Si hay detalles adicionales del error, mostrarlos
+      if (error.response && error.response.data) {
+        console.log(`Detalles del error: ${JSON.stringify(error.response.data)}`);
       }
-    }
 
-    return false; // Si llegamos aquí, todos los intentos fallaron
+      return false;
+    }
   }
 
   /**
